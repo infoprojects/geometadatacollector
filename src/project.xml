@@ -1,0 +1,9 @@
+<project name="InfoProjects.GeoMetaDataCollector" alias="infoprojects.geo_meta_data_collector" version="1.0">
+  <props>
+    <prop name="newskool" value="false" />
+    <prop name="cs6.enabled" value="true" />
+  </props>
+  <environments>
+    <environment type="oper">internet</environment>
+  </environments>
+</project>
