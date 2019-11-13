@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeoMetaDataCollector", "GeoMetaDataCollector\GeoMetaDataCollector.csproj", "{44EBE70A-5C87-4AD4-9F4B-FBE5B1BE3539}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoMetaDataCollector.Test", "GeoMetaDataCollector.Test\GeoMetaDataCollector.Test.csproj", "{38806B88-DCBA-4D3D-8B9E-5C13DA518A44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoMetaDataCollector.Test", "GeoMetaDataCollector.Test\GeoMetaDataCollector.Test.csproj", "{98CAA549-85DF-41B2-A72C-18F900CEC6B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{44EBE70A-5C87-4AD4-9F4B-FBE5B1BE3539}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44EBE70A-5C87-4AD4-9F4B-FBE5B1BE3539}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44EBE70A-5C87-4AD4-9F4B-FBE5B1BE3539}.Release|Any CPU.Build.0 = Release|Any CPU
-		{38806B88-DCBA-4D3D-8B9E-5C13DA518A44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{38806B88-DCBA-4D3D-8B9E-5C13DA518A44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{38806B88-DCBA-4D3D-8B9E-5C13DA518A44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{38806B88-DCBA-4D3D-8B9E-5C13DA518A44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98CAA549-85DF-41B2-A72C-18F900CEC6B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98CAA549-85DF-41B2-A72C-18F900CEC6B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98CAA549-85DF-41B2-A72C-18F900CEC6B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98CAA549-85DF-41B2-A72C-18F900CEC6B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
