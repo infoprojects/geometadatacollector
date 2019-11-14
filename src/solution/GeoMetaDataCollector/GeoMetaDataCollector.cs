@@ -1,7 +1,10 @@
 ﻿namespace GeoMetaDataCollector {
   using System;
   using System.Collections.Generic;
+  using System.IO;
   using System.Linq;
+  using System.Net;
+  using System.Text.RegularExpressions;
   using System.Xml;
 
   public class GeoMetaDataCollector {
@@ -27,7 +30,7 @@
     }
 
     public IEnumerable<LayerTextField> LayerTextFields(string layer) {
-      var xmlResponse = this.GetXmlResponse($"{this.wfsUri.AbsoluteUri}?request=DescribeFeatureType&typeName={layer}");
+      var xmlResponse = this.GetXmlResponse($"{this.wfsUri.AbsoluteUri}?service=wfs&request=DescribeFeatureType&typeName={layer}");
       var nsmgr = GetNamespaceManager(xmlResponse);
       return from featureType in xmlResponse.SelectNodes($"/xsd:schema/xsd:element[@type = '{layer}Type']", nsmgr).Cast<XmlElement>()
              let featureTypeName = featureType.GetAttribute("name")
@@ -38,7 +41,31 @@
     }
 
     public IEnumerable<LayerTextFieldValue> DistinctCollectionValues(string layer, string field) {
-      throw new NotSupportedException();
+      var values = new List<string>();
+      var url = $"{this.wfsUri.AbsoluteUri}?service=wfs&request=GetFeature&typeName={layer}&outputformat=csv&PropertyName={field}";
+      this.logger?.Debug("Loading values from {0}", url);
+      var request = WebRequest.Create(url);
+      using (var response = request.GetResponse())
+      using (var stream = response.GetResponseStream())
+      using (var reader = new StreamReader(stream)) {
+        var line = reader.ReadLine();
+        this.logger?.Debug("Header: {0}", line);
+        while (!reader.EndOfStream) {
+          line = reader.ReadLine();
+          this.logger?.Trace("Record: {0}", line);
+          var value = GetValueFromLine(line);
+          if (!string.IsNullOrEmpty(value) && !values.Contains(value)) {
+            values.Add(value);
+          }
+        }
+      }
+
+      return values.Select(value => new LayerTextFieldValue { Value = value });
+    }
+
+    internal static string GetValueFromLine(string line) {
+      var matches = Regex.Matches(line, "(?:,\"?)([^\"]*)(?:\"?)$");
+      return (matches.Count == 1 && matches[0].Groups.Count == 2) ? matches[0].Groups[1].Value : string.Empty;
     }
 
     private static XmlNamespaceManager GetNamespaceManager(XmlDocument xmlCapabilities) {
