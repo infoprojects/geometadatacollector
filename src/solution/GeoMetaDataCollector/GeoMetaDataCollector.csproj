@@ -6,6 +6,9 @@
     <PackageId>InfoProjects.GeoMetaDataCollector</PackageId>
     <Company>InfoProjects</Company>
     <Authors />
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
   </PropertyGroup>
 
 </Project>

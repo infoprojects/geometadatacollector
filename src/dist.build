@@ -3,8 +3,8 @@
     <echo message="Create zip for InfoProjects.GeoMetaDataCollector" />
     <zip zipfile="${dist.dir}\InfoProjects.GeoMetaDataCollector.zip" ziplevel="${ziplevel}">
       <fileset basedir="${build.dir}\internet\www\bin">
-        <include name="**\*.dll" />
-        <include name="**\*.pdb" />
+        <include name="GeoMetaDataCollector.dll" />
+        <include name="GeoMetaDataCollector.pdb" />
       </fileset>
     </zip>
   </target>
