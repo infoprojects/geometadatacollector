@@ -63,6 +63,15 @@
       return values.Select(value => new LayerTextFieldValue { Value = value });
     }
 
+    public IEnumerable<LayerTextFieldValue> DistinctSplittedCollectionValues(string layer, string field, string splitPattern = ",") {
+      return (from unsplittedValue in this.DistinctCollectionValues(layer, field)
+              from value in Regex.Split(unsplittedValue.Value, splitPattern)
+              select value.Trim().ToLowerInvariant())
+        .Distinct()
+        .OrderBy(value => value)
+        .Select(value => new LayerTextFieldValue { Value = value });
+    }
+
     internal static string GetValueFromLine(string line) {
       var matches = Regex.Matches(line, "(?:,\"?)([^\"]*)(?:\"?)$");
       return (matches.Count == 1 && matches[0].Groups.Count == 2) ? matches[0].Groups[1].Value : string.Empty;
