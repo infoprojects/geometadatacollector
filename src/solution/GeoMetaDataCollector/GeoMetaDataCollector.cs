@@ -66,7 +66,7 @@
     public IEnumerable<LayerTextFieldValue> DistinctSplittedCollectionValues(string layer, string field, string splitPattern = ",") {
       return (from unsplittedValue in this.DistinctCollectionValues(layer, field)
               from value in Regex.Split(unsplittedValue.Value, splitPattern)
-              select value.Trim().ToLowerInvariant())
+              select value.Trim())
         .Distinct()
         .OrderBy(value => value)
         .Select(value => new LayerTextFieldValue { Value = value });
