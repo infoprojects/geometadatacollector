@@ -10,15 +10,15 @@
   public class GeoMetaDataCollector {
     private readonly ILogger logger;
 
-    private readonly Uri wfsUri;
+    private readonly Uri serviceUri;
 
-    public GeoMetaDataCollector(Uri wfsUri, ILogger logger = null) {
-      this.wfsUri = wfsUri;
+    public GeoMetaDataCollector(Uri serviceUri, ILogger logger = null) {
+      this.serviceUri = serviceUri;
       this.logger = logger;
     }
 
     public IEnumerable<Layer> Layers() {
-      var xmlResponse = this.GetXmlResponse($"{this.wfsUri.AbsoluteUri}?service=wfs&request=GetCapabilities");
+      var xmlResponse = this.GetXmlResponse($"{this.serviceUri.AbsoluteUri}?service=wfs&request=GetCapabilities");
       var nsmgr = GetNamespaceManager(xmlResponse);
       var layers = xmlResponse.SelectNodes("/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType", nsmgr).Cast<XmlElement>();
       return from layer in layers
@@ -29,8 +29,31 @@
              };
     }
 
+    public IEnumerable<Layer> MapLayers() {
+      var xmlResponse = this.GetXmlResponse($"{this.serviceUri.AbsoluteUri}?service=WMS&request=GetCapabilities");
+      var nsmgr = GetNamespaceManager(xmlResponse);
+      var version = xmlResponse.SelectSingleNode("/wms:WMS_Capabilities/@version", nsmgr).Value;
+      var formats = xmlResponse.SelectNodes("/wms:WMS_Capabilities/wms:Capability/wms:Request/wms:GetFeatureInfo/wms:Format", nsmgr)
+        .Cast<XmlElement>()
+        .Select(format => format.InnerText)
+        .ToList();
+      var layers = xmlResponse.SelectNodes("/wms:WMS_Capabilities/wms:Capability//wms:Layer[wms:Name]", nsmgr).Cast<XmlElement>();
+      return from layer in layers
+             select new Layer {
+               Name = layer.SelectSingleNode("wms:Name", nsmgr)?.InnerText,
+               Title = layer.SelectSingleNode("wms:Title", nsmgr)?.InnerText,
+               Abstract = layer.SelectSingleNode("wms:Abstract", nsmgr)?.InnerText,
+               Version = version,
+               Format = formats,
+               Crs = layer.SelectNodes("wms:CRS", nsmgr)
+                 .Cast<XmlElement>()
+                 .Select(crs => crs.InnerText)
+                 .ToList()
+             };
+    }
+
     public IEnumerable<LayerTextField> LayerTextFields(string layer) {
-      var xmlResponse = this.GetXmlResponse($"{this.wfsUri.AbsoluteUri}?service=wfs&request=DescribeFeatureType&typeName={layer}");
+      var xmlResponse = this.GetXmlResponse($"{this.serviceUri.AbsoluteUri}?service=wfs&request=DescribeFeatureType&typeName={layer}");
       var nsmgr = GetNamespaceManager(xmlResponse);
       return from featureType in xmlResponse.SelectNodes($"/xsd:schema/xsd:element[@type = '{layer}Type']", nsmgr).Cast<XmlElement>()
              let featureTypeName = featureType.GetAttribute("name")
@@ -42,7 +65,7 @@
 
     public IEnumerable<LayerTextFieldValue> DistinctCollectionValues(string layer, string field) {
       var values = new List<string>();
-      var url = $"{this.wfsUri.AbsoluteUri}?service=wfs&request=GetFeature&typeName={layer}&outputformat=csv&PropertyName={field}";
+      var url = $"{this.serviceUri.AbsoluteUri}?service=wfs&request=GetFeature&typeName={layer}&outputformat=csv&PropertyName={field}";
       this.logger?.Debug("Loading values from {0}", url);
       var request = WebRequest.Create(url);
       using (var response = request.GetResponse())
@@ -80,6 +103,7 @@
     private static XmlNamespaceManager GetNamespaceManager(XmlDocument xmlCapabilities) {
       var namespaceManager = new XmlNamespaceManager(xmlCapabilities.NameTable);
       namespaceManager.AddNamespace("wfs", "http://www.opengis.net/wfs/2.0");
+      namespaceManager.AddNamespace("wms", "http://www.opengis.net/wms");
       namespaceManager.AddNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
       return namespaceManager;
     }
